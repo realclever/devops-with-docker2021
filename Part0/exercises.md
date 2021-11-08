@@ -13,4 +13,12 @@
 ![e3b](https://i.imgur.com/grNdr3X.png)
 
 ## 1.4: Missing dependencies
+```
+docker run -d -it ubuntu sh -c 'echo "Input website:"; read website; echo "Searching.."; sleep 1; curl http://$website;'
+docker ps -a 
+docker exec -it xenodochial_montalcini bash
+apt-get update
+apt-get install curl
+```
+![e4f](https://i.imgur.com/VfwQk5o.png)
 
