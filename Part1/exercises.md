@@ -32,3 +32,11 @@ docker run -d --name alps devopsdockeruh/simple-web-service:alpine
 ```
 ![e5a](https://i.imgur.com/btIUNGm.png)
 ![e5b](https://i.imgur.com/T3Zb5qu.png)
+
+## 1.6: Hello Docker Hub
+
+```
+docker run -it devopsdockeruh/pull_exercise
+Docker Hub -> GitHub source dir -> readme.md "This is the readme, use input "basics" to complete this exercise."
+```
+![e6](https://i.imgur.com/yNzOop0.png)
