@@ -40,3 +40,19 @@ docker run -it devopsdockeruh/pull_exercise
 Docker Hub -> GitHub source dir -> readme.md "This is the readme, use input "basics" to complete this exercise."
 ```
 ![e6](https://i.imgur.com/yNzOop0.png)
+
+## 1.7: Two line Dockerfile
+
+```
+# Dockerfile
+# Start from the alpine image 
+FROM devopsdockeruh/simple-web-service:alpine
+
+CMD server
+```
+apparently Terminal/Bash required Full Disk Access from macOS before allowing to build new images.
+```
+docker build . -t web-server
+docker run web-server
+```
+![e7](https://i.imgur.com/o2KVfiN.png)
