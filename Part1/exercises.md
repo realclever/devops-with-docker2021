@@ -119,3 +119,9 @@ docker run -v "$(pwd)/text.log:/usr/src/app/text.log" devopsdockeruh/simple-web-
 # Allowing external connections into containers
 
 ## 1.10: Ports open
+
+```
+docker run -p 3000:8080 web-server
+```
+![e10a](https://i.imgur.com/4aplzyF.png)
+![e10b](https://i.imgur.com/gUWtHk8.png)
