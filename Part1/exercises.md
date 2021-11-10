@@ -1,3 +1,5 @@
+# Image and containers
+
 ## 1.1: Getting started
 
 ![e1](https://i.imgur.com/hfpxRAL.png)
@@ -5,6 +7,8 @@
 ## 1.2: Cleanup
 
 ![e2](https://i.imgur.com/06gTeDB.png)
+
+# Running and stopping containers
 
 ## 1.3: Secret message
 
@@ -18,10 +22,11 @@
 docker run -d -it ubuntu sh -c 'echo "Input website:"; read website; echo "Searching.."; sleep 1; curl http://$website;'
 docker ps -a 
 docker exec -it xenodochial_montalcini bash
-apt-get update
-apt-get install curl
+apt-get update && apt-get install -y curl
 ```
 ![e4f](https://i.imgur.com/VfwQk5o.png)
+
+# In depth dive to images
 
 ## 1.5: Sizes of images
 
@@ -40,6 +45,8 @@ docker run -it devopsdockeruh/pull_exercise
 Docker Hub -> GitHub source dir -> readme.md "This is the readme, use input "basics" to complete this exercise."
 ```
 ![e6](https://i.imgur.com/yNzOop0.png)
+
+# Building images
 
 ## 1.7: Two line Dockerfile
 
@@ -96,3 +103,19 @@ docker build . -t curler
 docker run -it curler
 ```
 ![e8b](https://i.imgur.com/HCdNwJ6.png)
+
+# More complex image/Volumes: bind mount
+
+## 1.9: Volumes
+
+```
+touch text.log
+docker run -v "$(pwd)/text.log:/usr/src/app/text.log" devopsdockeruh/simple-web-service
+```
+
+![e9b](https://i.imgur.com/QM2NxKD.png)
+![e9a](https://i.imgur.com/39tgW70.png)
+
+# Allowing external connections into containers
+
+## 1.10: Ports open
