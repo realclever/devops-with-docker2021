@@ -125,3 +125,38 @@ docker run -p 3000:8080 web-server
 ```
 ![e10a](https://i.imgur.com/4aplzyF.png)
 ![e10b](https://i.imgur.com/gUWtHk8.png)
+
+# Technology agnostic
+
+## 1.11 Spring
+
+Clone the Spring project
+
+```
+# Dockerfile
+
+# Make sure you have java _8_ installed
+FROM openjdk:8
+
+# expose port 3000
+EXPOSE 3000
+
+# Use /usr/src/app as our workdir. 
+WORKDIR /usr/src/app
+
+# Copy the spring project from this location to /usr/src/app/
+COPY /spring-example-project .
+
+# Build the project with
+RUN ./mvnw package
+
+# When running docker run the command will be 
+CMD ["java", "-jar", "./target/docker-example-1.1.3.jar"]
+```
+
+```
+docker build . -t springtest
+docker run -p 3000:8080 springtest
+```
+
+![e11](https://i.imgur.com/osEpVtG.png)
