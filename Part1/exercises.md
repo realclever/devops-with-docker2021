@@ -160,3 +160,44 @@ docker run -p 3000:8080 springtest
 ```
 
 ![e11](https://i.imgur.com/osEpVtG.png)
+
+## 1.12: Hello, frontend!
+
+Clone the Frontend project
+
+```
+# Dockerfile
+
+# LTS node
+FROM node:14
+
+# expose port 5000
+EXPOSE 5000
+
+# Use /usr/src/app as our workdir. 
+WORKDIR /usr/src/app
+
+# Copy the frontend project from this location to /usr/src/app/
+COPY /example-frontend .
+
+# install all packages
+RUN npm install
+
+# make sure node/npm are properly installed
+RUN node -v && npm -v
+
+# build
+RUN npm run build
+
+# install serve package
+RUN npm install -g serve
+
+# run serve
+CMD ["serve", "-s", "-l", "5000", "build"]
+```
+
+```
+docker build . -t frontendtest
+docker run -p 5000:5000 frontendtest
+```
+![e12](https://i.imgur.com/hoECBAb.png)
