@@ -54,7 +54,7 @@ Create Dockerfile ($touch Dockerfile)
 
 ```
 # Dockerfile
-# Start from the alpine image 
+# start from the alpine image 
 FROM devopsdockeruh/simple-web-service:alpine
 
 CMD server
@@ -77,20 +77,20 @@ echo "Input website:"; read website; echo "Searching.."; sleep 1; curl http://$w
 ```
 # Dockerfile
 
-# Start from the ubuntu 18.04 image
+# start from the ubuntu 18.04 image
 FROM ubuntu:18.04
 
-# Use /usr/src/app as our workdir. The following instructions will be executed in this location.
+# use /usr/src/app as our workdir. The following instructions will be executed in this location.
 WORKDIR /usr/src/app
 
-# Copy the echo.sh file from this location to /usr/src/app/ creating /usr/src/app/echo.sh.
+# copy the echo.sh file from this location to /usr/src/app/ creating /usr/src/app/echo.sh.
 COPY echo.sh .
 
 # add execution permissions during the build and install curl
 RUN chmod +x echo.sh
 RUN apt-get update && apt-get install -y curl
 
-# When running docker run the command will be ./echo.sh
+# when running docker run the command will be ./echo.sh
 CMD ./echo.sh
 ```
 
@@ -130,27 +130,27 @@ docker run -p 3000:8080 web-server
 
 ## 1.11 Spring
 
-Clone the Spring project
+Clone the spring-example project
 
 ```
 # Dockerfile
 
-# Make sure you have java _8_ installed
+# make sure you have java _8_ installed
 FROM openjdk:8
 
 # expose port 3000
 EXPOSE 3000
 
-# Use /usr/src/app as our workdir. 
+# use /usr/src/app as our workdir. 
 WORKDIR /usr/src/app
 
-# Copy the spring project from this location to /usr/src/app/
+# copy the spring project from this location to /usr/src/app/
 COPY /spring-example-project .
 
-# Build the project with
+# build the project with
 RUN ./mvnw package
 
-# When running docker run the command will be 
+# when running docker run the command will be 
 CMD ["java", "-jar", "./target/docker-example-1.1.3.jar"]
 ```
 
@@ -163,7 +163,7 @@ docker run -p 3000:8080 springtest
 
 ## 1.12: Hello, frontend!
 
-Clone the Frontend project
+Clone the frontend-example project
 
 ```
 # Dockerfile
@@ -174,10 +174,10 @@ FROM node:14
 # expose port 5000
 EXPOSE 5000
 
-# Use /usr/src/app as our workdir. 
+# use /usr/src/app as our workdir. 
 WORKDIR /usr/src/app
 
-# Copy the frontend project from this location to /usr/src/app/
+# copy the frontend project from this location to /usr/src/app/
 COPY /example-frontend .
 
 # install all packages
@@ -201,3 +201,42 @@ docker build . -t frontendtest
 docker run -p 5000:5000 frontendtest
 ```
 ![e12](https://i.imgur.com/hoECBAb.png)
+
+## 1.13: Hello, backend!
+
+Clone the backend-example project
+
+```
+# Dockerfile
+
+# golang 1.16
+FROM golang:1.16
+
+# expose port 8080
+EXPOSE 8080
+
+# use /usr/src/app as our workdir. 
+WORKDIR /usr/src/app
+
+# copy the backend project from this location to /usr/src/app/
+COPY /example-backend .
+
+# build
+RUN go build
+
+# pass url through the cors check
+ENV REQUEST_ORIGIN=http://localhost:3000
+
+# test project
+RUN go test ./...
+
+# run serve
+CMD ["./server"]
+```
+
+```
+docker build . -t backendtest
+docker run -p 8080:8080 backendtest
+```
+
+![e13](https://i.imgur.com/dURPlLM.png)
