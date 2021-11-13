@@ -292,3 +292,53 @@ docker run -p 5000:5000 frontendtest
 ```
 
 ![e14](https://i.imgur.com/I4l4Ejh.png)
+
+## 1.14: Homework
+
+Source repo: https://github.com/realclever/fullstack-hy2021/tree/master/Osa1/anekdootit
+
+Steps: 
+
+Clone the project
+
+```
+# Dockerfile
+
+# LTS node
+FROM node:14
+
+# expose port 3000
+EXPOSE 3000
+
+# use /usr/src/app as our workdir. 
+WORKDIR /usr/src/app
+
+# copy the backend project from this location to /usr/src/app/
+COPY /anecdotes .
+
+# install all packages
+RUN npm install
+
+# build
+RUN npm run build
+
+# run serve
+CMD [ "npm", "start" ]
+```
+
+```
+docker build . -t anecdotes
+docker run -p 3000:3000 anecdotes
+```
+
+```
+docker login
+docker tag anecdotes realclever/anecdotes
+docker push realclever/anecdotes
+```
+
+```
+docker run -p 3000:3000 realclever/anecdotes
+```
+
+Docker Hub source: https://hub.docker.com/repository/docker/realclever/anecdotes
