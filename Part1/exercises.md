@@ -293,7 +293,7 @@ docker run -p 5000:5000 frontendtest
 
 ![e14](https://i.imgur.com/I4l4Ejh.png)
 
-## 1.14: Homework
+## 1.15: Homework
 
 Source repo: https://github.com/realclever/fullstack-hy2021/tree/master/Osa1/anekdootit
 
@@ -342,3 +342,7 @@ docker run -p 3000:3000 realclever/anecdotes
 ```
 
 Docker Hub source: https://hub.docker.com/repository/docker/realclever/anecdotes
+
+## 1.16: Heroku 
+
+https://anecdotes1.herokuapp.com/
