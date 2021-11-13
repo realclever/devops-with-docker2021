@@ -225,7 +225,7 @@ COPY /example-backend .
 RUN go build
 
 # pass url through the cors check
-ENV REQUEST_ORIGIN=http://localhost:3000
+ENV REQUEST_ORIGIN=http://localhost:5000
 
 # test project
 RUN go test ./...
@@ -240,3 +240,55 @@ docker run -p 8080:8080 backendtest
 ```
 
 ![e13](https://i.imgur.com/dURPlLM.png)
+
+## 1.14: Environment
+
+No modifications to backend except changing the ENV REQUEST_ORIGIN port to 5000 (previous exercise 1.13 fix, needs a new build)
+
+```
+docker build . -t backendtest
+docker run -p 8080:8080 backendtest
+```
+
+Minor frontend update: 
+
+```
+# Dockerfile
+
+# LTS node
+FROM node:14
+
+# expose port 5000
+EXPOSE 5000
+
+# use /usr/src/app as our workdir. 
+WORKDIR /usr/src/app
+
+# copy the frontend project from this location to /usr/src/app/
+COPY /example-frontend .
+
+# so both halves of the stack can connect
+ENV REACT_APP_BACKEND_URL=http://localhost:8080
+
+# install all packages
+RUN npm install
+
+# make sure node/npm are properly installed
+RUN node -v && npm -v
+
+# build
+RUN npm run build
+
+# install serve package
+RUN npm install -g serve
+
+# run serve
+CMD ["serve", "-s", "-l", "5000", "build"]
+```
+
+```
+docker build . -t frontendtest
+docker run -p 5000:5000 frontendtest
+```
+
+![e14](https://i.imgur.com/I4l4Ejh.png)
