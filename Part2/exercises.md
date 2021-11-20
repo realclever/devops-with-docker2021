@@ -85,4 +85,7 @@ docker-compose up
 
 Both http://localhost:5000 and http://localhost:8080/ping work. 
 
+# Docker networking
+
+## 2.4
 
