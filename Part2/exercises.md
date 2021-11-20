@@ -125,6 +125,10 @@ services:
       - 6379:6379 
 ````
 
+````
+docker-compose up
+````
+
 Both http://localhost:5000 and http://localhost:8080/ping work.
 
 ![e4a](https://i.imgur.com/KST4n2S.png)
@@ -137,3 +141,7 @@ curl http://localhost:8080/ping?redis=false
 It's easy to tell the difference.
 
 ![e4b](https://i.imgur.com/bPQGNzY.png)
+
+# Scaling
+
+## 2.5
