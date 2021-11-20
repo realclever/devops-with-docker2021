@@ -145,3 +145,15 @@ It's easy to tell the difference.
 # Scaling
 
 ## 2.5
+
+Clone the project. 
+
+Navigate to the scaling-exercise folder and test it with ````docker-compose up```` *not working*
+
+Looks like three instances is enough to get the job done. 
+
+````
+docker-compose up -d --scale compute=3
+````
+
+![e5](https://i.imgur.com/lxoRPn8.png)
