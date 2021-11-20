@@ -89,3 +89,51 @@ Both http://localhost:5000 and http://localhost:8080/ping work.
 
 ## 2.4
 
+````
+docker pull redis
+````
+
+````
+#docker-compose.yml
+
+version: '3.5'
+
+services:
+
+  frontendtest:
+    image: frontendtest
+    environment:
+      - REACT_APP_BACKEND_URL=http://localhost:8080
+    build: ./example-frontend
+    ports: 
+      - 5000:5000
+    command: serve -s -l 5000 build
+
+  backendtest:
+    image: backendtest
+    environment:
+      - REQUEST_ORIGIN=http://localhost:5000
+      - REDIS_HOST=redis
+    build: ./example-backend
+    ports:
+      - 8080:8080
+    command: ./server
+
+  redis:
+    image: redis
+    ports:
+      - 6379:6379 
+````
+
+Both http://localhost:5000 and http://localhost:8080/ping work.
+
+![e4a](https://i.imgur.com/KST4n2S.png)
+
+````
+curl http://localhost:8080/ping?redis=true
+curl http://localhost:8080/ping?redis=false
+````
+
+It's easy to tell the difference.
+
+![e4b](https://i.imgur.com/bPQGNzY.png)
