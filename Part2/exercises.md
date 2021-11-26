@@ -157,3 +157,58 @@ docker-compose up -d --scale compute=3
 ````
 
 ![e5](https://i.imgur.com/lxoRPn8.png)
+
+# Larger application with volumes
+
+## 2.6
+
+Let's continue configuring exercise 2.4
+
+Install Postgres ````docker pull postgres````
+
+````
+#docker-compose.yml
+
+version: '3.5'
+
+services:
+
+  frontendtest:
+    image: frontendtest
+    environment:
+      - REACT_APP_BACKEND_URL=http://localhost:8080
+    build: ./example-frontend
+    ports:
+      - 5000:5000
+    command: serve -s -l 5000 build
+
+  backendtest:
+    image: backendtest
+    environment:
+      - REQUEST_ORIGIN=http://localhost:5000
+      - REDIS_HOST=redis
+      - POSTGRES_PASSWORD=example
+      - POSTGRES_HOST=db
+    build: ./example-backend
+    ports:
+      - 8080:8080
+    command: ./server
+
+  redis:
+    image: redis
+    ports:
+      - 6379:6379
+
+  db:
+    image: postgres:13.2-alpine
+    restart: unless-stopped
+    environment:
+      - POSTGRES_PASSWORD=example
+````
+
+````
+docker-compose up
+^C terminates
+````
+![e6](https://i.imgur.com/VgykBD5.png)
+
