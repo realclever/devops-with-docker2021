@@ -212,3 +212,47 @@ docker-compose up
 ````
 ![e6](https://i.imgur.com/VgykBD5.png)
 
+## 2.7
+
+Clone all three parts. 
+
+````
+#docker-compose.yml
+
+version: '3.5'
+
+services:
+
+  ml-frontendtest:
+    image: ml-frontendtest
+    build: ./ml-kurkkumopo-frontend
+    ports:
+      - 3000:3000
+
+  ml-backendtest:
+    image: ml-backendtest
+    build: ./ml-kurkkumopo-backend
+    ports:
+      - 5000:5000
+    volumes:
+      - ./model:/src/model
+
+  ml-trainingtest:
+    image: ml-trainingtest
+    build: ./ml-kurkkumopo-training
+    volumes:
+      - ./model:/src/model
+      - ./imgs:/src/imgs
+
+volumes:
+  model: null
+````
+
+````
+docker-compose up
+^C terminates
+````
+Ran into several problems while configuring this project, but looks like it "works". 
+
+![e7](https://i.imgur.com/ZCFCShb.png)
+
