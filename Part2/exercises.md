@@ -256,3 +256,82 @@ Ran into several problems while configuring this project, but looks like it "wor
 
 ![e7](https://i.imgur.com/ZCFCShb.png)
 
+## 2.8
+
+Let's continue configuring exercise 2.6
+
+Pull Nginx ````docker pull nginx ```` 
+
+````
+#docker-compose.yml
+
+version: '3.5'
+
+services:
+
+  frontendtest:
+    image: frontendtest
+    environment:
+      - REACT_APP_BACKEND_URL=http://localhost:8080
+    build: ./example-frontend
+    ports:
+      - 5000:5000
+    command: serve -s -l 5000 build
+
+  backendtest:
+    image: backendtest
+    environment:
+      - REQUEST_ORIGIN=http://localhost:5000
+      - REDIS_HOST=redis
+      - POSTGRES_PASSWORD=example
+      - POSTGRES_HOST=db
+    build: ./example-backend
+    ports:
+      - 8080:8080
+    command: ./server
+
+  redis:
+    image: redis
+    ports:
+      - 6379:6379
+
+  db:
+    image: postgres:13.2-alpine
+    restart: unless-stopped
+    environment:
+      - POSTGRES_PASSWORD=example
+
+  web:
+    image: nginx
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+    ports:
+      - 80:80
+````
+````
+#nginx.conf
+
+events { worker_connections 1024; }
+
+http {
+  server {
+    listen 80;
+
+    location / {
+      proxy_pass http://frontendtest:5000; 
+    }
+
+    location /api/ {
+      proxy_set_header Host $host;
+      proxy_pass http://backendtest:8080/;
+    }
+  }
+}
+````
+
+````
+docker-compose up
+^C terminates
+````
+
+![e8](https://i.imgur.com/CDAH8ny.png)
