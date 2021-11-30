@@ -335,3 +335,68 @@ docker-compose up
 ````
 
 ![e8](https://i.imgur.com/CDAH8ny.png)
+
+## 2.9
+
+Let's continue configuring exercise 2.8
+
+According to Postgres image documentation the default location for database files is ```/var/lib/postgresql/data```. Just need to add volumes to db. 
+
+````
+#docker-compose.yml
+
+version: '3.5'
+
+services:
+
+  frontendtest:
+    image: frontendtest
+    environment:
+      - REACT_APP_BACKEND_URL=http://localhost:8080
+    build: ./example-frontend
+    ports:
+      - 5000:5000
+    command: serve -s -l 5000 build
+
+  backendtest:
+    image: backendtest
+    environment:
+      - REQUEST_ORIGIN=http://localhost:5000
+      - REDIS_HOST=redis
+      - POSTGRES_PASSWORD=example
+      - POSTGRES_HOST=db
+    build: ./example-backend
+    ports:
+      - 8080:8080
+    command: ./server
+
+  redis:
+    image: redis
+    ports:
+      - 6379:6379
+
+  db:
+    image: postgres:13.2-alpine
+    restart: unless-stopped
+    environment:
+      - POSTGRES_PASSWORD=example
+    volumes:
+      - ./dbfolder:/var/lib/postgresql/data
+
+  web:
+    image: nginx
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+    ports:
+      - 80:80
+````
+
+```docker-compose up``` - 
+dbfolder is now created.   
+```docker-compose down``` - 
+dbfolder still exists.   
+```docker-compose up``` -  after refreshing the messages still exist.   
+```docker-compose down``` -  and delete the dbfolder.  
+```docker-compose up``` -  new dbfolder has been created, but the old messages are gone.  
+      
+      
