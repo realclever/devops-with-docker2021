@@ -400,3 +400,59 @@ dbfolder still exists.
 ```docker-compose up``` -  new dbfolder has been created, but the old messages are gone.  
       
       
+## 2.10
+
+This one was a pretty simple fix as I had noticed that first three buttons worked at ```http://localhost:8080``` and the last button worked at ```http://localhost```. By changing backends environment variable REQUEST_ORIGIN to ```http://localhost``` ensures that the stacks are properly connected.
+
+````
+#docker-compose.yml
+
+version: '3.5'
+
+services:
+
+  frontendtest:
+    image: frontendtest
+    environment:
+      - REACT_APP_BACKEND_URL=http://localhost:8080
+    build: ./example-frontend
+    ports:
+      - 5000:5000
+    command: serve -s -l 5000 build
+
+  backendtest:
+    image: backendtest
+    environment:
+      - REQUEST_ORIGIN=http://localhost
+      - REDIS_HOST=redis
+      - POSTGRES_PASSWORD=example
+      - POSTGRES_HOST=db
+    build: ./example-backend
+    ports:
+      - 8080:8080
+    command: ./server
+
+  redis:
+    image: redis
+    ports:
+      - 6379:6379
+
+  db:
+    image: postgres:13.2-alpine
+    restart: unless-stopped
+    environment:
+      - POSTGRES_PASSWORD=example
+    volumes:
+      - ./dbfolder:/var/lib/postgresql/data
+
+  web:
+    image: nginx
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+    ports:
+      - 80:80
+````
+
+Now all the buttons work at ```http://localhost``` and ```http://localhost:8080/ping``` as well. 
+
+![e10](https://i.imgur.com/5idZTVt.png)
