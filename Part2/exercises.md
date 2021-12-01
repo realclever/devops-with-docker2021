@@ -456,3 +456,64 @@ services:
 Now all the buttons work at ```http://localhost``` and ```http://localhost:8080/ping``` as well. 
 
 ![e10](https://i.imgur.com/5idZTVt.png)
+
+# Containers in development
+
+
+## 2.11
+
+I decided to continue configuring [exercise 1.15](https://github.com/realclever/devops-with-docker2021/blob/main/Part1/exercises.md)
+
+Source repo: https://github.com/realclever/fullstack-hy2021/tree/master/Osa1/anekdootit
+
+No big changes to Dockerfile, just removed some unnecessary lines. 
+
+````
+# Dockerfile
+
+# LTS node
+FROM node:14
+
+# expose port 3000
+EXPOSE 3000
+
+# use /usr/src/app as our workdir. 
+WORKDIR /usr/src/app
+
+# copy the backend project from this location to /usr/src/app/
+COPY /anecdotes .
+
+# install all packages
+RUN npm install
+````
+
+
+
+````
+#docker-compose.yml
+
+version: '3.5'
+
+services:
+
+  anecdotes:
+    build: .
+    ports:
+      - 3000:3000
+    volumes:
+      - ./anecdotes/:/usr/src/app
+      - node_modules:/usr/src/app/node_modules
+    command: npm start
+
+volumes:
+  node_modules:
+````
+
+```
+docker-compose up
+```
+
+The exercise was super simple as I basically just copypasted the code from the example with very minor modifications.
+
+![e11](https://i.imgur.com/r2fa4cQ.png)
+
