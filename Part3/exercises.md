@@ -28,8 +28,6 @@ ENV REACT_APP_BACKEND_URL=http://localhost:8080
 
 RUN npm install
 
-RUN node -v && npm -v
-
 RUN npm run build
 
 RUN npm install -g serve
@@ -59,8 +57,6 @@ RUN go build
 
 ENV REQUEST_ORIGIN=http://localhost:5000
 
-RUN go test ./...
-
 RUN useradd -m appuser
 
 RUN chown appuser: /usr/src/app
@@ -71,3 +67,67 @@ CMD ["./server"]
 ````
 
 Built and ran both Dockerfiles. 
+
+
+## 3.4
+
+Used the Dockerfiles from previous exercise.
+
+Frontend ["optimized"] 
+````
+FROM node:14
+
+EXPOSE 5000
+ 
+WORKDIR /usr/src/app
+
+COPY . .
+
+ENV REACT_APP_BACKEND_URL=http://localhost:8080
+
+RUN npm install && \ 
+    npm run build && \
+    npm install -g serve && \
+    useradd -m appuser && \
+    chown appuser: /usr/src/app && \
+    rm -rf /var/lib/apt/lists/*
+
+USER appuser
+
+CMD ["serve", "-s", "-l", "5000", "build"]
+````
+
+Backend ["optimized"]
+````
+FROM golang:1.16
+
+EXPOSE 8080
+
+WORKDIR /usr/src/app
+
+COPY . .
+
+ENV REQUEST_ORIGIN=http://localhost:5000
+
+RUN go build && \
+    useradd -m appuser && \
+    chown appuser: /usr/src/app && \
+    rm -rf /var/lib/apt/lists/* 
+
+USER appuser
+
+CMD ["./server"]
+````
+
+```docker image inspect [image] --format='{{.Size}}'```
+
+
+Before/After (bytes)
+
+| Frontend | Backend |
+| ------------- | ------------- |
+| 1171007075  | 1065539902  |
+| 1171001685  | 1065302358  |
+
+Very minor changes. 
+
