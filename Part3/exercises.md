@@ -73,7 +73,7 @@ Built and ran both Dockerfiles.
 
 Used the Dockerfiles from previous exercise.
 
-Frontend ["optimized"] 
+Frontend [optimized] 
 ````
 FROM node:14
 
@@ -97,7 +97,7 @@ USER appuser
 CMD ["serve", "-s", "-l", "5000", "build"]
 ````
 
-Backend ["optimized"]
+Backend [optimized]
 ````
 FROM golang:1.16
 
@@ -130,4 +130,64 @@ Before/After (bytes)
 | 1171001685  | 1065302358  |
 
 Very minor changes. 
+
+## 3.5
+
+Using the Dockerfiles with Alpine variants. 
+
+Frontend [optimized] 
+````
+FROM alpine
+
+EXPOSE 5000
+ 
+WORKDIR /usr/src/app
+
+COPY . .
+
+ENV REACT_APP_BACKEND_URL=http://localhost:8080
+
+RUN apk add --no-cache nodejs npm && \
+    npm install && \ 
+    npm run build && \
+    npm install -g serve && \
+    adduser -D appuser && \
+    rm -rf /var/lib/apt/lists/* 
+
+USER appuser
+
+CMD ["serve", "-s", "-l", "5000", "build"]
+````
+
+Backend [optimized] 
+````
+FROM golang:alpine
+
+EXPOSE 8080
+
+WORKDIR /usr/src/app
+
+COPY . .
+
+ENV REQUEST_ORIGIN=http://localhost:5000
+
+RUN go build && \
+    adduser -D appuser && \
+    chown appuser: /usr/src/app && \
+    rm -rf /var/lib/apt/lists/* 
+
+USER appuser
+
+CMD ["./server"]
+````
+Built and ran both Dockerfiles. 
+
+Before/After (bytes)
+
+| Frontend | Backend |
+| ------------- | ------------- |
+| 1171001685  | 1065302358  |
+|  351009337 |  466868037 |
+
+According to [this article](https://itnext.io/lightweight-and-performance-dockerfile-for-node-js-ec9eed3c5aef) nodejs variant alpine is only 5mb compared to other 100mb+ variants. Unfortunately ```chown``` stopped working on frontend and requires configuring the package manager in order to work. Now we are noticing significant changes to image sizes. 
 
