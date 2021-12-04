@@ -191,3 +191,39 @@ Before/After (bytes)
 
 According to [this article](https://itnext.io/lightweight-and-performance-dockerfile-for-node-js-ec9eed3c5aef) nodejs variant alpine is only 5mb compared to other 100mb+ variants. Unfortunately ```chown``` stopped working on frontend and requires configuring the package manager in order to work. Now we are noticing significant changes to image sizes. 
 
+## 3.6 Frontend
+
+````
+FROM alpine:latest as build-stage
+
+EXPOSE 5000
+ 
+WORKDIR /usr/src/app
+
+COPY . .
+
+ENV REACT_APP_BACKEND_URL=http://localhost:8080
+
+RUN apk add --no-cache nodejs npm && \
+    npm install && \ 
+    npm run build && \
+    adduser -D appuser && \
+    rm -rf /var/lib/apt/lists/* 
+
+USER appuser
+
+FROM node:alpine
+
+COPY --from=build-stage /usr/src/app/build build/
+
+RUN npm install -g serve
+
+CMD ["serve", "-s", "-l", "5000", "build"]
+````
+
+Before/After (bytes)
+
+| Frontend |
+| ------------- |
+| 351009337  |
+|  180149466 |
