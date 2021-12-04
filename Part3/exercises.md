@@ -191,7 +191,7 @@ Before/After (bytes)
 
 According to [this article](https://itnext.io/lightweight-and-performance-dockerfile-for-node-js-ec9eed3c5aef) nodejs variant alpine is only 5mb compared to other 100mb+ variants. Unfortunately ```chown``` stopped working on frontend and requires configuring the package manager in order to work. Now we are noticing significant changes to image sizes. 
 
-## 3.6 Frontend
+## 3.6 Multi-stage frontend
 
 ````
 FROM alpine:latest as build-stage
@@ -227,3 +227,36 @@ Before/After (bytes)
 | ------------- |
 | 351009337  |
 |  180149466 |
+
+## 3.6 Multi-stage backend
+
+````
+FROM golang:alpine as base 
+
+EXPOSE 8080
+
+WORKDIR /usr/src/app
+
+COPY . .
+
+ENV REQUEST_ORIGIN=http://localhost:5000
+
+RUN CGO_ENABLED=0 GOOS=linux go build . && \
+    adduser -D appuser && \
+    chown appuser: /usr/src/app && \
+    rm -rf /var/lib/apt/lists/* 
+
+USER appuser
+
+FROM scratch 
+
+COPY --from=base /usr/src/app .
+
+CMD ["./server"]
+````
+Before/After (bytes)
+
+| Backend |
+| ------------- |
+| 466868037  |
+|  17647316 [17.65MB] |
