@@ -6,6 +6,10 @@ This exercise was quite a handful, but seems like everything works.
 
 https://github.com/realclever/devops-with-anecdotes
 
+https://hub.docker.com/repository/docker/realclever/anecdotes
+
+https://anecdotes1.herokuapp.com
+
 Kudos to: https://github.com/marketplace/actions/build-push-and-release-a-docker-container-to-heroku
 
 ## 3.3 
@@ -191,6 +195,7 @@ Before/After (bytes)
 |  351009337 |  466868037 |
 
 According to [this article](https://itnext.io/lightweight-and-performance-dockerfile-for-node-js-ec9eed3c5aef) nodejs variant alpine is only 5mb compared to other 100mb+ variants. <strike> Unfortunately ```chown``` stopped working on frontend and requires configuring the package manager in order to work</strike>.  Now we are noticing significant changes to image sizes. 
+
 EDIT: ```chown``` fixed
 
 ## 3.6 Multi-stage frontend
@@ -286,3 +291,35 @@ CMD [ "npm", "start" ]
 
 After
 
+````
+FROM alpine
+
+EXPOSE 3000
+ 
+WORKDIR /usr/src/app
+
+COPY . .
+
+RUN apk add --no-cache nodejs npm && \
+    npm install && \ 
+    npm run build && \
+    adduser -D appuser && \
+    chown -R appuser:appuser /usr/src/app && \
+    rm -rf /var/lib/apt/lists/* 
+
+USER appuser
+
+CMD [ "npm", "start" ]
+````
+
+Before/After (bytes)
+
+| Anecdotes |
+| ------------- |
+| 1126194888  |
+|  306800169 |
+
+After 2.5 days and countless (30+) builds, I've decided to abandon to idea of converting it to a multi-stage build (package.json issue). 
+I also pushed this updated Dockerfile since [exercise 3.1](https://github.com/realclever/devops-with-anecdotes) used the old un-optimized (before) version. 
+
+ Since we are using deployment pipeline, Docker Hub and Heroku were automatically updated as well. 
