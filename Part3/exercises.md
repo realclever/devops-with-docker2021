@@ -152,6 +152,7 @@ RUN apk add --no-cache nodejs npm && \
     npm run build && \
     npm install -g serve && \
     adduser -D appuser && \
+    chown -R appuser:appuser /usr/src/app && \
     rm -rf /var/lib/apt/lists/* 
 
 USER appuser
@@ -189,7 +190,8 @@ Before/After (bytes)
 | 1171001685  | 1065302358  |
 |  351009337 |  466868037 |
 
-According to [this article](https://itnext.io/lightweight-and-performance-dockerfile-for-node-js-ec9eed3c5aef) nodejs variant alpine is only 5mb compared to other 100mb+ variants. Unfortunately ```chown``` stopped working on frontend and requires configuring the package manager in order to work. Now we are noticing significant changes to image sizes. 
+According to [this article](https://itnext.io/lightweight-and-performance-dockerfile-for-node-js-ec9eed3c5aef) nodejs variant alpine is only 5mb compared to other 100mb+ variants. <strike> Unfortunately ```chown``` stopped working on frontend and requires configuring the package manager in order to work</strike>.  Now we are noticing significant changes to image sizes. 
+EDIT: ```chown``` fixed
 
 ## 3.6 Multi-stage frontend
 
@@ -231,7 +233,7 @@ Before/After (bytes)
 ## 3.6 Multi-stage backend
 
 ````
-FROM golang:alpine as base 
+FROM golang:alpine as build-stage 
 
 EXPOSE 8080
 
@@ -243,14 +245,14 @@ ENV REQUEST_ORIGIN=http://localhost:5000
 
 RUN CGO_ENABLED=0 GOOS=linux go build . && \
     adduser -D appuser && \
-    chown appuser: /usr/src/app && \
+    chown -R appuser: /usr/src/app && \
     rm -rf /var/lib/apt/lists/* 
 
 USER appuser
 
 FROM scratch 
 
-COPY --from=base /usr/src/app .
+COPY --from=build-stage /usr/src/app .
 
 CMD ["./server"]
 ````
