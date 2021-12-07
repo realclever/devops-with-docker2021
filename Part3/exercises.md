@@ -196,7 +196,7 @@ EDIT: ```chown``` fixed
 ## 3.6 Multi-stage frontend
 
 ````
-FROM alpine:latest as build-stage
+FROM alpine as build-stage
 
 EXPOSE 5000
  
@@ -210,6 +210,7 @@ RUN apk add --no-cache nodejs npm && \
     npm install && \ 
     npm run build && \
     adduser -D appuser && \
+    chown -R appuser: /usr/src/app && \
     rm -rf /var/lib/apt/lists/* 
 
 USER appuser
