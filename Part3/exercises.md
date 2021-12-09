@@ -12,14 +12,87 @@ https://anecdotes1.herokuapp.com
 
 Kudos to: https://github.com/marketplace/actions/build-push-and-release-a-docker-container-to-heroku
 
+## 3.2 Building images inside of a container
+
+git.sh 
+
+````
+#!/bin/sh
+
+echo "###### GitDocker Git/Build part  #######"
+
+echo "Enter Git (https) url: "
+
+read url
+
+echo "Save as (Docker Hub repository name (lowercase):"
+
+read project
+
+git clone $url ./$project
+
+cd $project
+
+docker build . -t $project 
+
+echo $project has been created or something went horribly wrong
+
+echo "###### Docher Hub part  #######"
+
+echo "Docker Hub username?"
+
+read username
+
+echo Log into Docker Hub $username
+
+docker login
+
+docker tag $project $username/$project
+
+while true; do
+    read -p "Publish your project on Docker Hub? y/n" yn
+    case $yn in
+        [Yy]* ) docker push $username/$project; break;;
+        [Nn]* ) echo Goodbye; exit;;
+        * ) echo "Please answer y/n.";;
+    esac
+done
+
+echo Docker image $project has now been published on Docker Hub or something went horribly wrong 
+
+echo Goodbye
+````
+
+Dockerfile
+
+````
+FROM docker:20.10.11-alpine3.14
+
+RUN apk update && apk add git  
+
+COPY ./git.sh .
+
+RUN chmod a+x git.sh .
+
+CMD ["/git.sh"]
+````
+
+```docker build . -t [project]```
+
+```docker run -it -v /var/run/docker.sock:/var/run/docker.sock [project]```
+
+I tested two projects and both were built and uploaded to Docker Hub successfully.
+
+https://github.com/docker-hy/ml-kurkkumopo-frontend
+
+https://github.com/realclever/devops-with-anecdotes
+
 ## 3.3 
 
 Using Dockerfiles from exercises 1.13/1.14 with minor modifications.
 
 Frontend
 ````
-# Dockerfile front
-
 FROM node:14
 
 EXPOSE 5000
@@ -47,8 +120,6 @@ CMD ["serve", "-s", "-l", "5000", "build"]
 
 Backend
 ````
-# Dockerfile back
-
 FROM golang:1.16
 
 EXPOSE 8080
